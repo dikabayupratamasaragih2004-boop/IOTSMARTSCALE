@@ -169,21 +169,23 @@ export default function RiwayatData() {
     <div className="space-y-4">
 
       {/* ── Summary cards ── */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="bg-surface-container-lowest rounded-2xl shadow-card p-4 text-center">
           <p className="text-text-secondary text-xs font-medium mb-1">Rekaman</p>
-          <p className="text-text-main text-2xl font-bold">{filtered.length}</p>
+          <p className="text-text-main text-xl sm:text-2xl font-bold truncate">
+            {filtered.length}
+          </p>
         </div>
         <div className="bg-surface-container-lowest rounded-2xl shadow-card p-4 text-center">
           <p className="text-text-secondary text-xs font-medium mb-1">Total (Kg)</p>
-          <p className="text-primary text-2xl font-bold tabular-nums">
-            {totalBerat.toLocaleString('id-ID', { minimumFractionDigits: 1 })}
+          <p className="text-primary text-xl sm:text-2xl font-bold tabular-nums truncate" title={totalBerat.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}>
+            {totalBerat.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
         </div>
         <div className="bg-surface-container-lowest rounded-2xl shadow-card p-4 text-center">
           <p className="text-text-secondary text-xs font-medium mb-1">Rata-rata</p>
-          <p className="text-text-main text-2xl font-bold tabular-nums">
-            {rataRata.toLocaleString('id-ID', { minimumFractionDigits: 1 })}
+          <p className="text-text-main text-xl sm:text-2xl font-bold tabular-nums truncate" title={rataRata.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}>
+            {rataRata.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
         </div>
       </div>

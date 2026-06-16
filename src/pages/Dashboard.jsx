@@ -51,13 +51,13 @@ export default function Dashboard() {
           icon="weight"
           iconBg="bg-primary/10 text-primary"
           label="Total Berat (Kg)"
-          value={totalBerat.toLocaleString('id-ID', { minimumFractionDigits: 1 })}
+          value={totalBerat.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         />
         <StatCard
           icon="avg_pace"
           iconBg="bg-accent-blue/10 text-accent-blue"
           label="Rata-rata / Sesi"
-          value={`${rataRata.toLocaleString('id-ID', { minimumFractionDigits: 1 })} Kg`}
+          value={`${rataRata.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Kg`}
         />
       </div>
 
