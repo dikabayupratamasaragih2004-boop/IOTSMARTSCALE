@@ -6,10 +6,10 @@ import { db } from '../lib/firebase';
  * Node Firebase yang digunakan untuk komunikasi real-time dengan alat fisik.
  *
  * Alur kerja:
- *  1. User klik "Mulai"  → frontend tulis status:'menimbang' ke devices/SCALE-01
+ *  1. User klik "Mulai"  → frontend tulis status:'menimbang', komoditas, harga ke devices/SCALE-01
  *  2. Alat fisik baca status → mulai kirim berat ke devices/SCALE-01/current_weight
- *  3. Frontend dengarkan onValue current_weight → tampilkan angka live
- *  4. User klik "Selesai" (atau alat set status:'selesai') → simpan ke weight_records
+ *  3. Frontend dengarkan onValue current_weight → tampilkan angka live & hitung Rp live
+ *  4. User klik "Selesai" (atau alat set status:'selesai') → simpan ke weight_records dengan detail harga
  *  5. Frontend reset devices/SCALE-01 ke idle
  */
 const DEVICE_REF = 'devices/SCALE-01';
@@ -34,6 +34,12 @@ export function useInputTimbangan() {
   const [sessionStart, setSessionStart] = useState(null);
   const [error, setError]           = useState('');
 
+  /* ── State Manajemen Harga Karet ── */
+  const [pricesList, setPricesList] = useState([]);
+  const [selectedPriceId, setSelectedPriceId] = useState('');
+  const [selectedCommodity, setSelectedCommodity] = useState('');
+  const [hargaPerKg, setHargaPerKg] = useState(0);
+
   /* ── Refs internal ── */
   const unsubRef  = useRef(null); // Firebase onValue unsubscribe
   const timerRef  = useRef(null); // interval timer
@@ -41,6 +47,30 @@ export function useInputTimbangan() {
 
   // Sinkronkan phaseRef setiap kali phase berubah
   useEffect(() => { phaseRef.current = phase; }, [phase]);
+
+  // Ambil daftar harga dari Firebase
+  useEffect(() => {
+    const unsub = onValue(ref(db, 'prices'), (snap) => {
+      if (snap.exists()) {
+        setPricesList(Object.values(snap.val()));
+      } else {
+        setPricesList([]);
+      }
+    });
+    return () => unsub();
+  }, []);
+
+  // Update komoditas dan harga saat ID harga terpilih berubah
+  useEffect(() => {
+    const found = pricesList.find((p) => p.id === selectedPriceId);
+    if (found) {
+      setSelectedCommodity(`${found.komoditas} (${found.grade})`);
+      setHargaPerKg(found.harga_per_kg);
+    } else {
+      setSelectedCommodity('');
+      setHargaPerKg(0);
+    }
+  }, [selectedPriceId, pricesList]);
 
   /* ── Timer durasi sesi ── */
   useEffect(() => {
@@ -75,6 +105,9 @@ export function useInputTimbangan() {
         nama_alat:       namaAlat.trim(),
         hasil_timbangan: finalKg,
         nama_petani:     namaPetani.trim(),
+        komoditas:       selectedCommodity,
+        harga_per_kg:    hargaPerKg,
+        total_harga:     finalKg * hargaPerKg,
         created_at:      now,
         updated_at:      now,
       });
@@ -83,6 +116,8 @@ export function useInputTimbangan() {
         status:         'idle',
         nama_petani:    '',
         nama_alat:      '',
+        komoditas:      '',
+        harga_per_kg:   0,
         current_weight: 0,
         session_id:     '',
       });
@@ -95,11 +130,11 @@ export function useInputTimbangan() {
       setSaving(false);
       setPhase('selesai');
     }
-  }, [namaAlat, namaPetani]);
+  }, [namaAlat, namaPetani, selectedCommodity, hargaPerKg]);
 
   /* ── MULAI sesi ── */
   async function handleMulai() {
-    if (!namaPetani.trim() || !namaAlat.trim()) return;
+    if (!namaPetani.trim() || !namaAlat.trim() || !selectedPriceId) return;
     setError('');
     setLiveWeight(0);
     setHasilFinal(null);
@@ -112,6 +147,8 @@ export function useInputTimbangan() {
       status:         'menimbang',
       nama_petani:    namaPetani.trim(),
       nama_alat:      namaAlat.trim(),
+      komoditas:      selectedCommodity,
+      harga_per_kg:   hargaPerKg,
       current_weight: 0,
       session_id:     sessionId,
     });
@@ -153,6 +190,9 @@ export function useInputTimbangan() {
     setPhase('idle');
     setNamaPetani('');
     setNamaAlat('');
+    setSelectedPriceId('');
+    setSelectedCommodity('');
+    setHargaPerKg(0);
     setLiveWeight(0);
     setHasilFinal(null);
     setSavedId(null);
@@ -173,6 +213,11 @@ export function useInputTimbangan() {
     elapsed,
     sessionStart,
     error,
+    /* state harga karet */
+    pricesList,
+    selectedPriceId, setSelectedPriceId,
+    selectedCommodity,
+    hargaPerKg,
     /* actions */
     handleMulai,
     handleSelesai,

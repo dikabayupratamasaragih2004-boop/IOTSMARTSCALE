@@ -8,6 +8,7 @@ const pageTitles = {
   '/dashboard':       { section: 'Dashboard',       title: 'Main Dashboard' },
   '/input-timbangan': { section: 'Input Timbangan', title: 'Input Timbangan Real-time' },
   '/riwayat':         { section: 'Riwayat Data',    title: 'Riwayat Penimbangan' },
+  '/harga':           { section: 'Harga Karet',     title: 'Manajemen Harga Karet' },
 };
 
 const mobileNav = [

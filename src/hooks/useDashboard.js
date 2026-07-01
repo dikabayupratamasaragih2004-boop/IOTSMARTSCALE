@@ -9,7 +9,6 @@ export function useDashboard() {
   const [loading, setLoading]   = useState(true);
 
   // Gunakan onValue agar dashboard ikut update real-time
-  // saat sesi baru selesai dari halaman Input Timbangan
   useEffect(() => {
     const unsub = onValue(ref(db, 'weight_records'), (snap) => {
       if (snap.exists()) {
@@ -20,7 +19,7 @@ export function useDashboard() {
         setRecords([]);
       }
       setLoading(false);
-    }, () => setLoading(false)); // error handler
+    }, () => setLoading(false));
 
     return () => unsub();
   }, []);
@@ -28,6 +27,7 @@ export function useDashboard() {
   /* ── Derived stats ── */
   const totalSesi   = records.length;
   const totalBerat  = records.reduce((s, r) => s + (r.hasil_timbangan ?? 0), 0);
+  const totalPendapatan = records.reduce((s, r) => s + (r.total_harga ?? 0), 0);
   const rataRata    = totalSesi > 0 ? totalBerat / totalSesi : 0;
   const recentRecords = records.slice(0, 5);
 
@@ -74,6 +74,7 @@ export function useDashboard() {
     /* stats */
     totalSesi,
     totalBerat,
+    totalPendapatan,
     rataRata,
     /* alat */
     alatEntries,

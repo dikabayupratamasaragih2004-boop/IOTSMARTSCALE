@@ -17,13 +17,19 @@ export default function InputTimbangan() {
     handleSelesai,
     handleSesiBaru,
     fmtTime,
+    /* State manajemen harga karet */
+    pricesList,
+    selectedPriceId, setSelectedPriceId,
+    selectedCommodity,
+    hargaPerKg,
   } = useInputTimbangan();
 
   const isIdle      = phase === 'idle';
   const isActive    = phase === 'menimbang';
   const isDone      = phase === 'selesai';
   const displayKg   = isDone ? hasilFinal : liveWeight;
-  const canStart    = namaPetani.trim() !== '' && namaAlat.trim() !== '';
+  const canStart    = namaPetani.trim() !== '' && namaAlat.trim() !== '' && selectedPriceId !== '';
+  const displayRp   = displayKg * hargaPerKg;
 
   return (
     <div className="flex flex-col lg:flex-row gap-4 min-h-[calc(100dvh-140px)] lg:min-h-[calc(100dvh-100px)]">
@@ -48,7 +54,7 @@ export default function InputTimbangan() {
                 {isIdle ? 'Timbangan Digital' : (namaAlat || 'Timbangan Digital')}
               </p>
               <p className="text-text-secondary text-xs truncate">
-                {isIdle ? 'Menunggu sesi dimulai' : namaPetani}
+                {isIdle ? 'Menunggu sesi dimulai' : `${namaPetani} (${selectedCommodity})`}
               </p>
             </div>
           </div>
@@ -95,11 +101,21 @@ export default function InputTimbangan() {
               {(displayKg ?? 0).toFixed(2)}
             </div>
 
-            <p className={`text-xl sm:text-2xl font-bold mt-3 ${
+            <p className={`text-xl sm:text-2xl font-bold mt-1 ${
               isIdle ? 'text-text-secondary/20' : 'text-text-secondary'
             }`}>
               Kilogram
             </p>
+
+            {/* Live kalkulasi harga Rupiah */}
+            {!isIdle && (
+              <div className="mt-4 animate-[fadeScale_0.2s_ease-out]">
+                <p className="text-text-secondary text-[10px] uppercase tracking-wider font-bold mb-0.5">Nominal Transaksi</p>
+                <div className="text-2xl sm:text-3xl font-black text-[#006948] tabular-nums">
+                  Rp {displayRp.toLocaleString('id-ID')}
+                </div>
+              </div>
+            )}
 
             {/* Timer durasi */}
             {isActive && (
@@ -119,17 +135,23 @@ export default function InputTimbangan() {
 
             {/* Banner sukses setelah selesai */}
             {isDone && savedId && (
-              <div className="mt-8 bg-green-50 border border-green-200 rounded-2xl px-6 py-5 text-left max-w-sm mx-auto">
+              <div className="mt-8 bg-green-50 border border-green-200 rounded-2xl px-6 py-5 text-left max-w-sm mx-auto shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="material-symbols-outlined text-green-600">check_circle</span>
                   <span className="font-bold text-green-800">Data tersimpan!</span>
                 </div>
                 <div className="space-y-1.5 text-sm text-green-700">
-                  <p><span className="font-semibold">Petani :</span> {namaPetani}</p>
-                  <p><span className="font-semibold">Alat   :</span> {namaAlat}</p>
-                  <p><span className="font-semibold">Berat  :</span> {hasilFinal?.toFixed(2)} Kg</p>
-                  <p><span className="font-semibold">Durasi :</span> {fmtTime(elapsed)}</p>
-                  <p className="font-mono text-green-600 text-[11px] mt-2 break-all">{savedId}</p>
+                  <p><span className="font-semibold text-green-800/80">Petani :</span> {namaPetani}</p>
+                  <p><span className="font-semibold text-green-800/80">Alat   :</span> {namaAlat}</p>
+                  <p><span className="font-semibold text-green-800/80">Jenis  :</span> {selectedCommodity}</p>
+                  <p><span className="font-semibold text-green-800/80">Tarif  :</span> Rp {hargaPerKg.toLocaleString('id-ID')}/Kg</p>
+                  <p><span className="font-semibold text-green-800/80">Berat  :</span> {hasilFinal?.toFixed(2)} Kg</p>
+                  <hr className="border-green-200 my-1.5" />
+                  <p className="text-base font-bold text-green-900">
+                    <span>Total  :</span> Rp {((hasilFinal ?? 0) * hargaPerKg).toLocaleString('id-ID')}
+                  </p>
+                  <p className="text-xs text-green-700/80"><span className="font-semibold">Durasi :</span> {fmtTime(elapsed)}</p>
+                  <p className="font-mono text-green-600 text-[10px] mt-2 break-all">{savedId}</p>
                 </div>
               </div>
             )}
@@ -265,6 +287,39 @@ export default function InputTimbangan() {
                 />
               </div>
             </div>
+
+            {/* Jenis Karet & Tarif */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-2">
+                Jenis Karet / Tarif
+              </label>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2
+                                 text-text-secondary text-xl pointer-events-none">
+                  payments
+                </span>
+                <select
+                  value={selectedPriceId}
+                  onChange={(e) => setSelectedPriceId(e.target.value)}
+                  disabled={!isIdle}
+                  className="w-full pl-12 pr-10 py-4 bg-surface-container-low border-2 border-transparent
+                             focus:border-primary focus:bg-white rounded-xl text-text-main text-sm
+                             focus:ring-4 focus:ring-primary/10 outline-none transition-all
+                             disabled:opacity-50 disabled:cursor-not-allowed appearance-none cursor-pointer"
+                >
+                  <option value="">-- Pilih Jenis Karet & Tarif --</option>
+                  {pricesList.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.komoditas} ({p.grade}) - Rp {p.harga_per_kg.toLocaleString('id-ID')}/Kg
+                    </option>
+                  ))}
+                </select>
+                <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2
+                                 text-text-secondary text-xl pointer-events-none">
+                  arrow_drop_down
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Info sesi aktif */}
@@ -277,12 +332,14 @@ export default function InputTimbangan() {
                 {[
                   { label: 'Petani',  value: namaPetani },
                   { label: 'Alat',    value: namaAlat },
+                  { label: 'Karet',   value: selectedCommodity },
+                  { label: 'Tarif',   value: `Rp ${hargaPerKg.toLocaleString('id-ID')}/Kg` },
                   { label: 'Mulai',   value: sessionStart?.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) ?? '-' },
-                  { label: 'Durasi',  value: fmtTime(elapsed) },
+                  { label: 'Nilai',   value: `Rp ${displayRp.toLocaleString('id-ID')}` },
                 ].map(({ label, value }) => (
                   <div key={label}>
                     <p className="text-[10px] uppercase tracking-wider text-text-secondary">{label}</p>
-                    <p className="font-bold text-text-main text-sm truncate">{value}</p>
+                    <p className="font-bold text-text-main text-sm truncate" title={value}>{value}</p>
                   </div>
                 ))}
               </div>
@@ -301,7 +358,6 @@ export default function InputTimbangan() {
             {[
               {
                 label: 'Firebase RTDB',
-                // Firebase selalu terhubung jika halaman terbuka
                 ok: true,
                 desc: 'Realtime Database aktif',
               },

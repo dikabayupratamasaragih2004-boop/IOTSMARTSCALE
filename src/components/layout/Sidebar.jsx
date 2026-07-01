@@ -4,6 +4,7 @@ const navItems = [
   { to: '/dashboard',       icon: 'dashboard', label: 'Dashboard' },
   { to: '/input-timbangan', icon: 'scale',     label: 'Input Timbangan' },
   { to: '/riwayat',         icon: 'history',   label: 'Riwayat Data' },
+  { to: '/harga',             icon: 'payments',  label: 'Manajemen Harga' },
 ];
 
 export default function Sidebar({ onClose }) {

@@ -38,13 +38,14 @@ export function useRiwayatData() {
     setPage(1);
   }
 
-  /* ── Delete — confirm dialog shown in page component, this just executes ── */
+  /* ── Delete ── */
   const deleteRecord = useCallback(async (id) => {
     setActionLoading(true);
     try {
       await remove(ref(db, `weight_records/${id}`));
       await dialog.success('Data timbangan berhasil dihapus.', 'Berhasil Hapus');
-    } catch {
+    } catch (err) {
+      console.error('[useRiwayatData] Gagal hapus:', err);
       await dialog.error('Gagal menghapus data. Silakan coba lagi.', 'Gagal Hapus');
     } finally {
       setActionLoading(false);
@@ -55,14 +56,21 @@ export function useRiwayatData() {
   const updateRecord = useCallback(async (id, data) => {
     setActionLoading(true);
     try {
+      const weight = parseFloat(data.hasil_timbangan);
+      const price = parseFloat(data.harga_per_kg ?? 0);
       await update(ref(db, `weight_records/${id}`), {
-        ...data,
-        hasil_timbangan: parseFloat(data.hasil_timbangan),
+        nama_petani: data.nama_petani.trim(),
+        nama_alat: data.nama_alat.trim(),
+        komoditas: data.komoditas?.trim() || '',
+        harga_per_kg: price,
+        hasil_timbangan: weight,
+        total_harga: weight * price,
         updated_at: new Date().toISOString(),
       });
       setEditingRecord(null);
       await dialog.success('Data timbangan berhasil diperbarui.', 'Berhasil Edit');
-    } catch {
+    } catch (err) {
+      console.error('[useRiwayatData] Gagal update:', err);
       await dialog.error('Gagal memperbarui data. Silakan coba lagi.', 'Gagal Edit');
     } finally {
       setActionLoading(false);
@@ -76,6 +84,7 @@ export function useRiwayatData() {
     return records.filter((r) =>
       r.nama_petani?.toLowerCase().includes(q) ||
       r.nama_alat?.toLowerCase().includes(q)   ||
+      r.komoditas?.toLowerCase().includes(q)   ||
       r.id?.toLowerCase().includes(q)
     );
   }, [records, search]);
@@ -87,6 +96,7 @@ export function useRiwayatData() {
   /* ── Derived: summary stats ── */
   const totalBerat = filtered.reduce((s, r) => s + (r.hasil_timbangan ?? 0), 0);
   const rataRata   = filtered.length > 0 ? totalBerat / filtered.length : 0;
+  const totalPendapatan = filtered.reduce((s, r) => s + (r.total_harga ?? 0), 0);
 
   /* ── Pagination sliding window (maks 5 tombol) ── */
   function pageNumbers() {
@@ -109,6 +119,7 @@ export function useRiwayatData() {
     pageRecords,
     totalBerat,
     rataRata,
+    totalPendapatan,
     search, handleSearch,
     page, setPage,
     totalPages,

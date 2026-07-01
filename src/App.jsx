@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import InputTimbangan from './pages/InputTimbangan';
 import RiwayatData from './pages/RiwayatData';
+import ManajemenHarga from './pages/ManajemenHarga';
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="input-timbangan" element={<InputTimbangan />} />
         <Route path="riwayat" element={<RiwayatData />} />
+        <Route path="harga" element={<ManajemenHarga />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -10,7 +10,7 @@ function StatCard({ icon, iconBg, label, value }) {
       </div>
       <div className="min-w-0">
         <p className="text-text-secondary text-xs font-medium truncate">{label}</p>
-        <h3 className="text-text-main text-xl font-bold tabular-nums truncate">{value}</h3>
+        <h3 className="text-text-main text-xl font-bold tabular-nums truncate" title={value}>{value}</h3>
       </div>
     </div>
   );
@@ -31,7 +31,7 @@ export default function Dashboard() {
     recentRecords,
     totalSesi,
     totalBerat,
-    rataRata,
+    totalPendapatan,
     alatEntries,
     chartBars,
   } = useDashboard();
@@ -54,10 +54,10 @@ export default function Dashboard() {
           value={totalBerat.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         />
         <StatCard
-          icon="avg_pace"
-          iconBg="bg-accent-blue/10 text-accent-blue"
-          label="Rata-rata / Sesi"
-          value={`${rataRata.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Kg`}
+          icon="payments"
+          iconBg="bg-green-50 text-[#006948]"
+          label="Total Pendapatan"
+          value={`Rp ${totalPendapatan.toLocaleString('id-ID')}`}
         />
       </div>
 
@@ -68,7 +68,7 @@ export default function Dashboard() {
         <div className="lg:col-span-8 bg-surface-container-lowest rounded-2xl shadow-card p-5 flex flex-col">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h4 className="text-text-main font-bold">Weighing Trends</h4>
+              <h4 className="text-text-main font-bold">Tren Penimbangan Karet</h4>
               <p className="text-text-secondary text-xs mt-0.5">
                 Berat total per hari (7 hari terakhir, Kg)
               </p>
@@ -168,14 +168,16 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-text-main text-sm truncate">{r.nama_petani}</p>
-                    <p className="text-text-secondary text-xs truncate">{r.nama_alat}</p>
+                    <p className="text-text-secondary text-xs truncate">
+                      {r.nama_alat} • {r.komoditas || '—'}
+                    </p>
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className="font-bold text-primary text-sm tabular-nums">
                       {r.hasil_timbangan?.toFixed(1)} Kg
                     </p>
-                    <p className="text-text-secondary text-xs">
-                      {new Date(r.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
+                    <p className="text-[#006948] text-xs font-bold tabular-nums">
+                      Rp {(r.total_harga ?? 0).toLocaleString('id-ID')}
                     </p>
                   </div>
                 </div>
@@ -186,8 +188,8 @@ export default function Dashboard() {
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="border-b border-surface-container">
-                    {['Nama Petani', 'Nama Alat', 'Hasil (Kg)', 'Tanggal'].map((h) => (
+                  <tr className="border-b border-surface-container bg-surface-container/40">
+                    {['Nama Petani', 'Nama Alat', 'Jenis Karet', 'Hasil (Kg)', 'Total Transaksi (Rp)', 'Tanggal'].map((h) => (
                       <th key={h} className="px-5 py-3 text-xs font-bold text-text-secondary uppercase tracking-wider">
                         {h}
                       </th>
@@ -206,8 +208,18 @@ export default function Dashboard() {
                         </div>
                       </td>
                       <td className="px-5 py-3.5 text-text-secondary text-sm">{r.nama_alat}</td>
+                      <td className="px-5 py-3.5">
+                        {r.komoditas ? (
+                          <span className="text-xs font-semibold px-2.5 py-0.5 bg-surface-container text-text-main rounded-full">
+                            {r.komoditas}
+                          </span>
+                        ) : '—'}
+                      </td>
                       <td className="px-5 py-3.5 font-bold text-text-main tabular-nums text-sm">
-                        {r.hasil_timbangan?.toFixed(2)}
+                        {r.hasil_timbangan?.toFixed(2)} Kg
+                      </td>
+                      <td className="px-5 py-3.5 font-bold text-[#006948] tabular-nums text-sm">
+                        Rp {(r.total_harga ?? 0).toLocaleString('id-ID')}
                       </td>
                       <td className="px-5 py-3.5 text-text-secondary text-sm whitespace-nowrap">
                         {new Date(r.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })}

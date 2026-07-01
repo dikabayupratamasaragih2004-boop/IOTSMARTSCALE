@@ -9,6 +9,8 @@ function EditModal({ record, onClose, onSave, loading }) {
     nama_petani:     record.nama_petani     ?? '',
     nama_alat:       record.nama_alat       ?? '',
     hasil_timbangan: record.hasil_timbangan ?? '',
+    komoditas:       record.komoditas       ?? '',
+    harga_per_kg:    record.harga_per_kg    ?? '',
   });
 
   function set(field, value) {
@@ -26,106 +28,136 @@ function EditModal({ record, onClose, onSave, loading }) {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       {/* Konten */}
       <div className="relative z-10 h-full flex items-center justify-center p-4 pointer-events-none">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-[fadeScale_0.2s_ease-out] pointer-events-auto">
+        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-[fadeScale_0.2s_ease-out] pointer-events-auto">
 
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-surface-container">
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center">
-              <span className="material-symbols-outlined text-primary text-xl"
-                    style={{ fontVariationSettings: "'FILL' 1" }}>edit</span>
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-surface-container">
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-primary text-xl"
+                      style={{ fontVariationSettings: "'FILL' 1" }}>edit</span>
+              </div>
+              <div>
+                <h3 className="font-bold text-text-main text-base">Edit Data</h3>
+                <p className="text-text-secondary text-xs font-mono">{record.id}</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-bold text-text-main text-base">Edit Data</h3>
-              <p className="text-text-secondary text-xs font-mono">{record.id}</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="h-8 w-8 rounded-full hover:bg-surface-container flex items-center justify-center transition-colors"
-          >
-            <span className="material-symbols-outlined text-text-secondary text-xl">close</span>
-          </button>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-1.5">
-              Nama Petani
-            </label>
-            <input
-              type="text"
-              value={form.nama_petani}
-              onChange={(e) => set('nama_petani', e.target.value)}
-              required
-              placeholder="Masukkan nama petani"
-              className="w-full px-4 py-3 bg-surface-container-low border-2 border-transparent
-                         focus:border-primary focus:bg-white rounded-xl text-sm transition-all outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-1.5">
-              Nama Alat
-            </label>
-            <input
-              type="text"
-              value={form.nama_alat}
-              onChange={(e) => set('nama_alat', e.target.value)}
-              required
-              placeholder="Masukkan nama alat"
-              className="w-full px-4 py-3 bg-surface-container-low border-2 border-transparent
-                         focus:border-primary focus:bg-white rounded-xl text-sm transition-all outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-1.5">
-              Hasil Timbangan (Kg)
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              value={form.hasil_timbangan}
-              onChange={(e) => set('hasil_timbangan', e.target.value)}
-              required
-              placeholder="0.00"
-              className="w-full px-4 py-3 bg-surface-container-low border-2 border-transparent
-                         focus:border-primary focus:bg-white rounded-xl text-sm transition-all outline-none"
-            />
-          </div>
-
-          <div className="flex gap-3 pt-2">
             <button
-              type="button"
               onClick={onClose}
-              className="flex-1 py-3 border-2 border-surface-container text-text-secondary
-                         rounded-xl font-bold text-sm hover:bg-surface-container transition-colors"
+              className="h-8 w-8 rounded-full hover:bg-surface-container flex items-center justify-center transition-colors"
             >
-              Batal
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 py-3 bg-primary text-white rounded-xl font-bold text-sm
-                         hover:bg-[#005a3e] transition-colors flex items-center justify-center gap-2
-                         disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  <span className="material-symbols-outlined text-base"
-                        style={{ fontVariationSettings: "'FILL' 1" }}>save</span>
-                  Simpan
-                </>
-              )}
+              <span className="material-symbols-outlined text-text-secondary text-xl">close</span>
             </button>
           </div>
-        </form>
-      </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-1.5">
+                Nama Petani
+              </label>
+              <input
+                type="text"
+                value={form.nama_petani}
+                onChange={(e) => set('nama_petani', e.target.value)}
+                required
+                placeholder="Masukkan nama petani"
+                className="w-full px-4 py-3 bg-surface-container-low border-2 border-transparent
+                           focus:border-primary focus:bg-white rounded-xl text-sm transition-all outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-1.5">
+                Nama Alat
+              </label>
+              <input
+                type="text"
+                value={form.nama_alat}
+                onChange={(e) => set('nama_alat', e.target.value)}
+                required
+                placeholder="Masukkan nama alat"
+                className="w-full px-4 py-3 bg-surface-container-low border-2 border-transparent
+                           focus:border-primary focus:bg-white rounded-xl text-sm transition-all outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-1.5">
+                Jenis Karet / Komoditas
+              </label>
+              <input
+                type="text"
+                value={form.komoditas}
+                onChange={(e) => set('komoditas', e.target.value)}
+                required
+                placeholder="Contoh: Karet Lateks, Karet Slab"
+                className="w-full px-4 py-3 bg-surface-container-low border-2 border-transparent
+                           focus:border-primary focus:bg-white rounded-xl text-sm transition-all outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-1.5">
+                Tarif per Kg (Rp)
+              </label>
+              <input
+                type="number"
+                value={form.harga_per_kg}
+                onChange={(e) => set('harga_per_kg', e.target.value)}
+                required
+                placeholder="Contoh: 12500"
+                className="w-full px-4 py-3 bg-surface-container-low border-2 border-transparent
+                           focus:border-primary focus:bg-white rounded-xl text-sm transition-all outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-1.5">
+                Hasil Timbangan (Kg)
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={form.hasil_timbangan}
+                onChange={(e) => set('hasil_timbangan', e.target.value)}
+                required
+                placeholder="0.00"
+                className="w-full px-4 py-3 bg-surface-container-low border-2 border-transparent
+                           focus:border-primary focus:bg-white rounded-xl text-sm transition-all outline-none"
+              />
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 py-3 border-2 border-surface-container text-text-secondary
+                           rounded-xl font-bold text-sm hover:bg-surface-container transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 py-3 bg-primary text-white rounded-xl font-bold text-sm
+                           hover:bg-[#005a3e] transition-colors flex items-center justify-center gap-2
+                           disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-base"
+                          style={{ fontVariationSettings: "'FILL' 1" }}>save</span>
+                    Simpan
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>,
     document.body
@@ -141,7 +173,7 @@ export default function RiwayatData() {
     filtered,
     pageRecords,
     totalBerat,
-    rataRata,
+    totalPendapatan,
     search, handleSearch,
     page, setPage,
     totalPages,
@@ -173,19 +205,19 @@ export default function RiwayatData() {
         <div className="bg-surface-container-lowest rounded-2xl shadow-card p-4 text-center">
           <p className="text-text-secondary text-xs font-medium mb-1">Rekaman</p>
           <p className="text-text-main text-xl sm:text-2xl font-bold truncate">
-            {filtered.length}
+            {filtered.length} Sesi
           </p>
         </div>
         <div className="bg-surface-container-lowest rounded-2xl shadow-card p-4 text-center">
-          <p className="text-text-secondary text-xs font-medium mb-1">Total (Kg)</p>
+          <p className="text-text-secondary text-xs font-medium mb-1">Total Berat (Kg)</p>
           <p className="text-primary text-xl sm:text-2xl font-bold tabular-nums truncate" title={totalBerat.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}>
             {totalBerat.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
         </div>
         <div className="bg-surface-container-lowest rounded-2xl shadow-card p-4 text-center">
-          <p className="text-text-secondary text-xs font-medium mb-1">Rata-rata</p>
-          <p className="text-text-main text-xl sm:text-2xl font-bold tabular-nums truncate" title={rataRata.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}>
-            {rataRata.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          <p className="text-text-secondary text-xs font-medium mb-1">Total Pendapatan</p>
+          <p className="text-[#006948] text-xl sm:text-2xl font-bold tabular-nums truncate" title={`Rp ${totalPendapatan.toLocaleString('id-ID')}`}>
+            Rp {totalPendapatan.toLocaleString('id-ID')}
           </p>
         </div>
       </div>
@@ -196,7 +228,7 @@ export default function RiwayatData() {
         {/* Toolbar */}
         <div className="px-5 py-4 flex flex-col sm:flex-row gap-3 items-start sm:items-center
                         justify-between border-b border-surface-container">
-          <h4 className="text-text-main font-bold">Riwayat Penimbangan</h4>
+          <h4 className="text-text-main font-bold">Riwayat Penimbangan Karet</h4>
           <div className="relative w-full sm:w-64">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2
                              text-text-secondary text-lg">
@@ -206,7 +238,7 @@ export default function RiwayatData() {
               type="text"
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Cari petani, alat, atau ID..."
+              placeholder="Cari petani, jenis karet, ID..."
               className="w-full pl-10 pr-4 py-2.5 bg-surface-container-low rounded-full text-sm
                          focus:ring-2 focus:ring-primary outline-none transition-all"
             />
@@ -232,7 +264,7 @@ export default function RiwayatData() {
             <div className="md:hidden divide-y divide-surface-container">
               {pageRecords.map((r, i) => (
                 <div key={r.id} className="px-5 py-4">
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center
                                       flex-shrink-0 text-xs font-bold text-primary">
@@ -240,14 +272,24 @@ export default function RiwayatData() {
                       </div>
                       <div className="min-w-0">
                         <p className="font-bold text-text-main text-sm truncate">{r.nama_petani}</p>
-                        <p className="text-text-secondary text-xs truncate">{r.nama_alat}</p>
+                        <p className="text-text-secondary text-xs truncate">
+                          {r.nama_alat} • {r.komoditas || '—'}
+                        </p>
+                        {r.harga_per_kg > 0 && (
+                          <p className="text-text-secondary text-[10px] truncate">
+                            Tarif: Rp {r.harga_per_kg.toLocaleString('id-ID')}/Kg
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="text-right flex-shrink-0">
                       <p className="font-bold text-primary tabular-nums text-sm">
                         {r.hasil_timbangan?.toFixed(2)} Kg
                       </p>
-                      <p className="text-text-secondary text-xs">
+                      <p className="font-bold text-[#006948] tabular-nums text-xs mt-0.5">
+                        Rp {(r.total_harga ?? 0).toLocaleString('id-ID')}
+                      </p>
+                      <p className="text-text-secondary text-[10px] mt-0.5">
                         {new Date(r.created_at).toLocaleDateString('id-ID', {
                           day: '2-digit', month: 'short', year: '2-digit',
                         })}
@@ -286,7 +328,11 @@ export default function RiwayatData() {
               <table className="w-full text-left">
                 <thead>
                   <tr className="border-b border-surface-container bg-surface-container/40">
-                    {['#', 'ID Rekam', 'Nama Petani', 'Nama Alat', 'Hasil (Kg)', 'Tanggal', 'Aksi'].map((h) => (
+                    {[
+                      '#', 'ID Rekam', 'Nama Petani', 'Nama Alat',
+                      'Jenis Karet', 'Tarif / Kg', 'Berat (Kg)',
+                      'Total Harga (Rp)', 'Tanggal', 'Aksi'
+                    ].map((h) => (
                       <th
                         key={h}
                         className="px-5 py-3 text-xs font-bold text-text-secondary uppercase tracking-wider whitespace-nowrap"
@@ -312,8 +358,21 @@ export default function RiwayatData() {
                         </div>
                       </td>
                       <td className="px-5 py-3.5 text-text-secondary text-sm">{r.nama_alat}</td>
+                      <td className="px-5 py-3.5">
+                        {r.komoditas ? (
+                          <span className="text-xs font-bold px-2 py-0.5 bg-surface-container text-text-main rounded-full">
+                            {r.komoditas}
+                          </span>
+                        ) : '—'}
+                      </td>
+                      <td className="px-5 py-3.5 font-bold text-text-secondary tabular-nums text-sm">
+                        {r.harga_per_kg ? `Rp ${r.harga_per_kg.toLocaleString('id-ID')}` : '—'}
+                      </td>
                       <td className="px-5 py-3.5 font-bold text-text-main tabular-nums text-sm">
-                        {r.hasil_timbangan?.toFixed(2)}
+                        {r.hasil_timbangan?.toFixed(2)} Kg
+                      </td>
+                      <td className="px-5 py-3.5 font-bold text-[#006948] tabular-nums text-sm">
+                        {r.total_harga ? `Rp ${r.total_harga.toLocaleString('id-ID')}` : '—'}
                       </td>
                       <td className="px-5 py-3.5 text-text-secondary text-sm whitespace-nowrap">
                         {new Date(r.created_at).toLocaleString('id-ID', {

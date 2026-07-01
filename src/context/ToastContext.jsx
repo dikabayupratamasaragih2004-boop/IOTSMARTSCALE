@@ -1,5 +1,4 @@
-import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
-import { _registerToast } from './AuthContext';
+import { createContext, useContext, useState, useCallback, useRef } from 'react';
 
 const ToastContext = createContext(null);
 
@@ -74,8 +73,7 @@ export function ToastProvider({ children }) {
     info:    (message, title = '')         => show('info',    message, title),
   };
 
-  // Daftarkan fungsi show ke AuthContext agar bisa dipanggil dari logout
-  useEffect(() => { _registerToast(show); }, [show]);
+
 
   return (
     <ToastContext.Provider value={toast}>
