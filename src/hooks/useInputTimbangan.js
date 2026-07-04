@@ -59,6 +59,36 @@ export function useInputTimbangan() {
     return () => unsub();
   }, []);
 
+  // Ambil daftar alat yang tersedia dari Firebase dan gabungkan dengan default
+  useEffect(() => {
+    const devicesRef = ref(db, 'devices');
+    const unsub = onValue(devicesRef, (snap) => {
+      if (snap.exists()) {
+        const keys = Object.keys(snap.val());
+        setDeviceList((prev) => {
+          const combined = [...new Set([...prev, ...keys])];
+          return combined;
+        });
+      }
+    }, (err) => {
+      console.error("Failed to fetch devices:", err);
+    });
+    return () => unsub();
+  }, []);
+
+  // Dengarkan status online alat fisik secara real-time berdasarkan namaAlat yang terpilih
+  useEffect(() => {
+    if (!namaAlat) {
+      setDeviceOnline(false);
+      return;
+    }
+    const onlineRef = ref(db, `devices/${namaAlat}/is_online`);
+    const unsub = onValue(onlineRef, (snap) => {
+      setDeviceOnline(snap.val() ?? false);
+    });
+    return () => unsub();
+  }, [namaAlat]);
+
   // Update komoditas dan harga saat ID harga terpilih berubah
   useEffect(() => {
     const found = pricesList.find((p) => p.id === selectedPriceId);
