@@ -12,8 +12,6 @@ import { db } from '../lib/firebase';
  *  4. User klik "Selesai" (atau alat set status:'selesai') → simpan ke weight_records dengan detail harga
  *  5. Frontend reset devices/SCALE-01 ke idle
  */
-const DEVICE_REF = 'devices/SCALE-01';
-
 function fmtTime(totalSec) {
   const m   = String(Math.floor(totalSec / 60)).padStart(2, '0');
   const sec = String(totalSec % 60).padStart(2, '0');
@@ -24,7 +22,8 @@ export function useInputTimbangan() {
   /* ── State UI ── */
   const [phase, setPhase]           = useState('idle'); // idle | menimbang | selesai
   const [namaPetani, setNamaPetani] = useState('');
-  const [namaAlat, setNamaAlat]     = useState('');
+  const [namaAlat, setNamaAlat]     = useState('SCALE-01');
+  const [deviceList, setDeviceList] = useState(['SCALE-01', 'SCALE-02', 'SCALE-03']);
   const [liveWeight, setLiveWeight] = useState(0);
   const [hasilFinal, setHasilFinal] = useState(null);
   const [saving, setSaving]         = useState(false);
