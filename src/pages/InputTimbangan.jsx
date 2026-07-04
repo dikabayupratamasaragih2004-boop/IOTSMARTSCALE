@@ -5,6 +5,7 @@ export default function InputTimbangan() {
     phase,
     namaPetani, setNamaPetani,
     namaAlat,   setNamaAlat,
+    deviceList,
     liveWeight,
     hasilFinal,
     saving,
@@ -274,17 +275,26 @@ export default function InputTimbangan() {
                                  text-text-secondary text-xl pointer-events-none">
                   scale
                 </span>
-                <input
-                  type="text"
+                <select
                   value={namaAlat}
                   onChange={(e) => setNamaAlat(e.target.value)}
                   disabled={!isIdle}
-                  placeholder="Contoh: DIGISCALE-X1"
-                  className="w-full pl-12 pr-4 py-4 bg-surface-container-low border-2 border-transparent
+                  className="w-full pl-12 pr-10 py-4 bg-surface-container-low border-2 border-transparent
                              focus:border-primary focus:bg-white rounded-xl text-text-main text-sm
-                             placeholder:text-text-secondary/40 focus:ring-4 focus:ring-primary/10
-                             outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                />
+                             focus:ring-4 focus:ring-primary/10 outline-none transition-all
+                             disabled:opacity-50 disabled:cursor-not-allowed appearance-none cursor-pointer"
+                >
+                  <option value="">-- Pilih Alat Timbangan --</option>
+                  {deviceList.map((d) => (
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                </select>
+                <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2
+                                 text-text-secondary text-xl pointer-events-none">
+                  arrow_drop_down
+                </span>
               </div>
             </div>
 

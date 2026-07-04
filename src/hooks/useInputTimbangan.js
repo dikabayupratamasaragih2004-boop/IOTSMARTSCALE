@@ -220,7 +220,7 @@ export function useInputTimbangan() {
     if (unsubRef.current) { unsubRef.current(); unsubRef.current = null; }
     setPhase('idle');
     setNamaPetani('');
-    setNamaAlat('');
+    setNamaAlat('SCALE-01');
     setSelectedPriceId('');
     setSelectedCommodity('');
     setHargaPerKg(0);
@@ -236,6 +236,7 @@ export function useInputTimbangan() {
     phase,
     namaPetani, setNamaPetani,
     namaAlat,   setNamaAlat,
+    deviceList,
     liveWeight,
     hasilFinal,
     saving,
