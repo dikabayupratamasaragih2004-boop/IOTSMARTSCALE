@@ -22,8 +22,8 @@ export function useInputTimbangan() {
   /* ── State UI ── */
   const [phase, setPhase]           = useState('idle'); // idle | menimbang | selesai
   const [namaPetani, setNamaPetani] = useState('');
-  const [namaAlat, setNamaAlat]     = useState('SCALE-01');
-  const [deviceList, setDeviceList] = useState(['SCALE-01', 'SCALE-02', 'SCALE-03']);
+  const [namaAlat, setNamaAlat]     = useState('');
+  const [deviceList, setDeviceList] = useState([]);
   const [liveWeight, setLiveWeight] = useState(0);
   const [hasilFinal, setHasilFinal] = useState(null);
   const [saving, setSaving]         = useState(false);
@@ -59,16 +59,22 @@ export function useInputTimbangan() {
     return () => unsub();
   }, []);
 
-  // Ambil daftar alat yang tersedia dari Firebase dan gabungkan dengan default
+  // Ambil daftar alat yang tersedia dari Firebase saja
   useEffect(() => {
     const devicesRef = ref(db, 'devices');
     const unsub = onValue(devicesRef, (snap) => {
       if (snap.exists()) {
         const keys = Object.keys(snap.val());
-        setDeviceList((prev) => {
-          const combined = [...new Set([...prev, ...keys])];
-          return combined;
+        setDeviceList(keys);
+        
+        // Atur default namaAlat ke alat pertama jika belum terpilih atau tidak ada di list
+        setNamaAlat((current) => {
+          if (keys.includes(current)) return current;
+          return keys[0] ?? '';
         });
+      } else {
+        setDeviceList([]);
+        setNamaAlat('');
       }
     }, (err) => {
       console.error("Failed to fetch devices:", err);
@@ -220,7 +226,7 @@ export function useInputTimbangan() {
     if (unsubRef.current) { unsubRef.current(); unsubRef.current = null; }
     setPhase('idle');
     setNamaPetani('');
-    setNamaAlat('SCALE-01');
+    setNamaAlat(deviceList[0] ?? '');
     setSelectedPriceId('');
     setSelectedCommodity('');
     setHargaPerKg(0);
