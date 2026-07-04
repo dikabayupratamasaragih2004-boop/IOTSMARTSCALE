@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { useAuth } from '../../context/AuthContext';
 import { useDialog } from '../../context/DialogContext';
+import { ref, onChildAdded } from 'firebase/database';
+import { db } from '../../lib/firebase';
+import { useToast } from '../../context/ToastContext';
 
 const pageTitles = {
   '/dashboard':       { section: 'Dashboard',       title: 'Main Dashboard' },
@@ -25,6 +28,57 @@ export default function AppLayout() {
   const navigate  = useNavigate();
   const { user, logout } = useAuth();
   const dialog = useDialog();
+
+  const [notifications, setNotifications] = useState(() => {
+    const saved = localStorage.getItem('agriweight_notifications');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [unreadCount, setUnreadCount] = useState(() => {
+    const saved = localStorage.getItem('agriweight_notifications');
+    if (saved) {
+      const list = JSON.parse(saved);
+      return list.filter((n) => !n.read).length;
+    }
+    return 0;
+  });
+  const [notifOpen, setNotifOpen] = useState(false);
+  const toast = useToast();
+
+  useEffect(() => {
+    localStorage.setItem('agriweight_notifications', JSON.stringify(notifications));
+    setUnreadCount(notifications.filter((n) => !n.read).length);
+  }, [notifications]);
+
+  useEffect(() => {
+    const recordsRef = ref(db, 'weight_records');
+    const appLoadTime = Date.now();
+
+    const unsub = onChildAdded(recordsRef, (snap) => {
+      if (!snap.exists()) return;
+      const record = snap.val();
+      
+      const recordTime = new Date(record.created_at).getTime();
+      // Hanya notifikasi record baru yang dibuat setelah web dibuka
+      if (recordTime > appLoadTime - 5000) {
+        const newNotif = {
+          id: record.id,
+          title: 'Penimbangan Baru!',
+          message: `${record.nama_petani} menimbang karet di ${record.nama_alat} seberat ${record.hasil_timbangan?.toFixed(2)} Kg.`,
+          time: new Date(record.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+          read: false,
+        };
+        setNotifications((prev) => [newNotif, ...prev]);
+
+        // Tampilkan toast di layar
+        toast.success(
+          `${record.nama_petani} menimbang karet di ${record.nama_alat} seberat ${record.hasil_timbangan?.toFixed(2)} Kg.`,
+          'Penimbangan Baru!'
+        );
+      }
+    });
+
+    return () => unsub();
+  }, [toast]);
 
   async function handleLogout() {
     setProfileOpen(false);
@@ -123,14 +177,90 @@ export default function AppLayout() {
               )}
 
               {/* Notifications */}
-              <button
-                className="h-9 w-9 rounded-full flex items-center justify-center relative
-                           text-text-secondary hover:bg-surface-container transition-colors"
-                aria-label="Notifikasi"
-              >
-                <span className="material-symbols-outlined text-xl">notifications</span>
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-status-error rounded-full" />
-              </button>
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setNotifOpen((o) => !o);
+                  }}
+                  className="h-9 w-9 rounded-full flex items-center justify-center relative
+                             text-text-secondary hover:bg-surface-container transition-colors"
+                  aria-label="Notifikasi"
+                >
+                  <span className="material-symbols-outlined text-xl">notifications</span>
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-status-error border border-white rounded-full animate-pulse" />
+                  )}
+                </button>
+
+                {notifOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setNotifOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-80 z-50
+                                    bg-surface-container-lowest rounded-2xl
+                                    shadow-[0_8px_32px_rgba(0,0,0,0.12)]
+                                    border border-surface-container overflow-hidden">
+                      <div className="flex items-center justify-between px-4 py-3 border-b border-surface-container bg-surface-container-low">
+                        <span className="font-bold text-text-main text-sm">Notifikasi</span>
+                        {notifications.length > 0 && (
+                          <button
+                            onClick={() => {
+                              setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+                            }}
+                            className="text-xs text-primary hover:underline font-semibold"
+                          >
+                            Tandai dibaca
+                          </button>
+                        )}
+                      </div>
+                      
+                      <div className="max-h-72 overflow-y-auto divide-y divide-surface-container">
+                        {notifications.length === 0 ? (
+                          <div className="flex flex-col items-center justify-center py-8 px-4 text-center text-text-secondary">
+                            <span className="material-symbols-outlined text-3xl opacity-20 mb-2">notifications_off</span>
+                            <p className="text-xs">Tidak ada notifikasi baru</p>
+                          </div>
+                        ) : (
+                          notifications.map((n) => (
+                            <div
+                              key={n.id}
+                              onClick={() => {
+                                // Tandai sebagai dibaca
+                                setNotifications((prev) =>
+                                  prev.map((item) =>
+                                    item.id === n.id ? { ...item, read: true } : item
+                                  )
+                                );
+                                setNotifOpen(false);
+                                navigate('/riwayat'); // Arahkan ke halaman riwayat
+                              }}
+                              className={`flex items-start gap-3 p-3 hover:bg-surface-container-low transition-colors cursor-pointer text-left ${
+                                !n.read ? 'bg-primary/5' : ''
+                              }`}
+                            >
+                              <div className={`h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                !n.read ? 'bg-primary/10 text-primary' : 'bg-surface-container text-text-secondary'
+                              }`}>
+                                <span className="material-symbols-outlined text-sm">scale</span>
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-xs font-bold text-text-main leading-tight truncate">{n.title}</p>
+                                <p className="text-[11px] text-text-secondary leading-normal mt-0.5 break-words">{n.message}</p>
+                                <p className="text-[10px] text-text-secondary/60 mt-1 font-medium">{n.time}</p>
+                              </div>
+                              {!n.read && (
+                                <span className="h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0 mt-1.5" />
+                              )}
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
 
               {/* Avatar + Profile Dropdown */}
               <div className="relative">
