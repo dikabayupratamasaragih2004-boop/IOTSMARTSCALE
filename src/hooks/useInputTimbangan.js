@@ -29,6 +29,7 @@ export function useInputTimbangan() {
   const [saving, setSaving]         = useState(false);
   const [savedId, setSavedId]       = useState(null);
   const [deviceOnline, setDeviceOnline] = useState(false);
+  const [sensorConnected, setSensorConnected] = useState(false);
   const [elapsed, setElapsed]       = useState(0);
   const [sessionStart, setSessionStart] = useState(null);
   const [error, setError]           = useState('');
@@ -82,15 +83,23 @@ export function useInputTimbangan() {
     return () => unsub();
   }, []);
 
-  // Dengarkan status online alat fisik secara real-time berdasarkan namaAlat yang terpilih
+  // Dengarkan status online alat fisik dan status sensor secara real-time berdasarkan namaAlat yang terpilih
   useEffect(() => {
     if (!namaAlat) {
       setDeviceOnline(false);
+      setSensorConnected(false);
       return;
     }
-    const onlineRef = ref(db, `devices/${namaAlat}/is_online`);
-    const unsub = onValue(onlineRef, (snap) => {
-      setDeviceOnline(snap.val() ?? false);
+    const deviceRef = ref(db, `devices/${namaAlat}`);
+    const unsub = onValue(deviceRef, (snap) => {
+      if (snap.exists()) {
+        const data = snap.val();
+        setDeviceOnline(data.is_online ?? false);
+        setSensorConnected(data.is_sensor_connected ?? false);
+      } else {
+        setDeviceOnline(false);
+        setSensorConnected(false);
+      }
     });
     return () => unsub();
   }, [namaAlat]);
@@ -248,6 +257,7 @@ export function useInputTimbangan() {
     saving,
     savedId,
     deviceOnline,
+    sensorConnected,
     elapsed,
     sessionStart,
     error,
