@@ -47,6 +47,48 @@ export function useInputTimbangan() {
   // Sinkronkan phaseRef setiap kali phase berubah
   useEffect(() => { phaseRef.current = phase; }, [phase]);
 
+  /* ── Simpan rekaman ke Firebase ── */
+  const saveRecord = useCallback(async (finalKg) => {
+    if (phaseRef.current === 'selesai') return; // hindari double-save
+    setSaving(true);
+    setError('');
+    const id  = `WR-${Date.now()}`;
+    const now = new Date().toISOString();
+    const deviceRefPath = `devices/${namaAlat}`;
+    try {
+      // Simpan ke weight_records
+      await set(ref(db, `weight_records/${id}`), {
+        id,
+        nama_alat:       namaAlat.trim(),
+        hasil_timbangan: finalKg,
+        nama_petani:     namaPetani.trim(),
+        komoditas:       selectedCommodity,
+        harga_per_kg:    hargaPerKg,
+        total_harga:     finalKg * hargaPerKg,
+        created_at:      now,
+        updated_at:      now,
+      });
+      // Reset status alat fisik ke idle
+      await update(ref(db, deviceRefPath), {
+        status:         'idle',
+        nama_petani:    '',
+        nama_alat:      '',
+        komoditas:      '',
+        harga_per_kg:   0,
+        current_weight: 0,
+        session_id:     '',
+      });
+      setSavedId(id);
+      setHasilFinal(finalKg);
+    } catch (err) {
+      console.error('[InputTimbangan] Gagal menyimpan:', err);
+      setError('Gagal menyimpan data. Periksa koneksi Firebase.');
+    } finally {
+      setSaving(false);
+      setPhase('selesai');
+    }
+  }, [namaAlat, namaPetani, selectedCommodity, hargaPerKg]);
+
   // Ambil daftar harga dari Firebase
   useEffect(() => {
     const unsub = onValue(ref(db, 'prices'), (snap) => {
@@ -174,47 +216,7 @@ export function useInputTimbangan() {
     };
   }, []);
 
-  /* ── Simpan rekaman ke Firebase ── */
-  const saveRecord = useCallback(async (finalKg) => {
-    if (phaseRef.current === 'selesai') return; // hindari double-save
-    setSaving(true);
-    setError('');
-    const id  = `WR-${Date.now()}`;
-    const now = new Date().toISOString();
-    const deviceRefPath = `devices/${namaAlat}`;
-    try {
-      // Simpan ke weight_records
-      await set(ref(db, `weight_records/${id}`), {
-        id,
-        nama_alat:       namaAlat.trim(),
-        hasil_timbangan: finalKg,
-        nama_petani:     namaPetani.trim(),
-        komoditas:       selectedCommodity,
-        harga_per_kg:    hargaPerKg,
-        total_harga:     finalKg * hargaPerKg,
-        created_at:      now,
-        updated_at:      now,
-      });
-      // Reset status alat fisik ke idle
-      await update(ref(db, deviceRefPath), {
-        status:         'idle',
-        nama_petani:    '',
-        nama_alat:      '',
-        komoditas:      '',
-        harga_per_kg:   0,
-        current_weight: 0,
-        session_id:     '',
-      });
-      setSavedId(id);
-      setHasilFinal(finalKg);
-    } catch (err) {
-      console.error('[InputTimbangan] Gagal menyimpan:', err);
-      setError('Gagal menyimpan data. Periksa koneksi Firebase.');
-    } finally {
-      setSaving(false);
-      setPhase('selesai');
-    }
-  }, [namaAlat, namaPetani, selectedCommodity, hargaPerKg]);
+
 
   /* ── MULAI sesi ── */
   async function handleMulai() {
