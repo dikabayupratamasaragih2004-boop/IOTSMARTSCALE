@@ -1,6 +1,6 @@
-# AgriWeight
+# SmartScale
 
-Sistem manajemen timbangan digital untuk hasil pertanian, dibangun dengan React + Vite dan Firebase Realtime Database. Mendukung penimbangan real-time via perangkat IoT (ESP32/Arduino) tanpa server backend terpisah.
+Sistem manajemen timbangan digital pintar, dibangun dengan React + Vite dan Firebase Realtime Database. Mendukung penimbangan real-time via perangkat IoT (ESP32/Arduino) tanpa server backend terpisah.
 
 ## Fitur
 
@@ -44,8 +44,8 @@ Sistem manajemen timbangan digital untuk hasil pertanian, dibangun dengan React 
 
 **1. Clone repositori**
 ```bash
-git clone https://github.com/username/agri-weight.git
-cd agri-weight
+git clone https://github.com/username/smart-scale.git
+cd smart-scale
 ```
 
 **2. Install dependensi**

@@ -49,13 +49,13 @@ export default function Login() {
 
       {/* Floating decorative icons — hidden on very small screens */}
       <div className="fixed top-8 left-8 float-animation opacity-15 hidden sm:block pointer-events-none">
-        <span className="material-symbols-outlined text-white" style={{ fontSize: 100 }}>agriculture</span>
+        <span className="material-symbols-outlined text-white" style={{ fontSize: 100 }}>scale</span>
       </div>
       <div className="fixed bottom-16 right-10 float-animation delay-1 opacity-15 hidden sm:block pointer-events-none">
         <span className="material-symbols-outlined text-white" style={{ fontSize: 130 }}>monitoring</span>
       </div>
       <div className="fixed top-1/3 right-1/4 float-animation delay-2 opacity-10 hidden lg:block pointer-events-none">
-        <span className="material-symbols-outlined text-white" style={{ fontSize: 70 }}>eco</span>
+        <span className="material-symbols-outlined text-white" style={{ fontSize: 70 }}>analytics</span>
       </div>
 
       {/* Card */}
@@ -69,26 +69,16 @@ export default function Login() {
               <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow">
                 <span className="material-symbols-outlined text-primary">scale</span>
               </div>
-              <span className="font-bold text-white text-xl">AgriWeight</span>
+              <span className="font-bold text-white text-xl">SmartScale</span>
             </div>
             <h2 className="text-white font-bold text-3xl leading-snug mb-4">
-              Presisi Digital<br />untuk Hasil Bumi.
+              Presisi Digital<br />Timbangan Pintar.
             </h2>
             <p className="text-white/75 text-sm leading-relaxed max-w-xs">
-              Sistem manajemen timbangan pintar untuk efisiensi operasional pertanian modern.
+              Sistem manajemen timbangan pintar untuk efisiensi operasional harian.
             </p>
           </div>
 
-          <div className="relative z-10 flex items-center gap-3 text-white/80 text-sm">
-            <div className="flex -space-x-2">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className="w-8 h-8 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-white text-sm">person</span>
-                </div>
-              ))}
-            </div>
-            <span>Bergabung dengan 500+ Fasilitas</span>
-          </div>
 
           {/* Decorative icon */}
           <div className="absolute -bottom-16 -right-16 opacity-20 pointer-events-none">
@@ -104,7 +94,7 @@ export default function Login() {
             <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center">
               <span className="material-symbols-outlined text-on-primary text-xl">scale</span>
             </div>
-            <span className="font-bold text-primary text-xl">AgriWeight</span>
+            <span className="font-bold text-primary text-xl">SmartScale</span>
           </div>
 
           <div className="mb-8">
@@ -142,9 +132,6 @@ export default function Login() {
                 <label className="text-xs font-bold uppercase tracking-widest text-text-secondary" htmlFor="password">
                   Kata Sandi
                 </label>
-                <button type="button" className="text-xs font-bold text-primary hover:underline">
-                  Lupa?
-                </button>
               </div>
               <div className="relative">
                 <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary text-xl pointer-events-none">
@@ -185,8 +172,8 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-primary hover:bg-[#005a3e] text-white rounded-2xl
-                         font-bold text-base shadow-[0_8px_32px_rgba(0,105,72,0.3)]
+              className="w-full py-4 bg-primary hover:bg-[#3550D6] text-white rounded-2xl
+                         font-bold text-base shadow-[0_8px_32px_rgba(74,108,247,0.3)]
                          transition-all active:scale-95 flex items-center justify-center gap-2 group
                          disabled:opacity-60 disabled:cursor-not-allowed"
             >
@@ -206,12 +193,6 @@ export default function Login() {
             </button>
           </form>
 
-          <p className="mt-8 text-center text-sm text-text-secondary">
-            Belum punya akun?{' '}
-            <span className="text-primary font-bold cursor-pointer hover:underline">
-              Hubungi Admin
-            </span>
-          </p>
         </div>
       </div>
     </div>

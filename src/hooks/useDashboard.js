@@ -11,15 +11,33 @@ export function useDashboard() {
   // Gunakan onValue agar dashboard ikut update real-time
   useEffect(() => {
     const unsub = onValue(ref(db, 'weight_records'), (snap) => {
-      if (snap.exists()) {
-        const arr = Object.values(snap.val())
-          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        setRecords(arr);
-      } else {
-        setRecords([]);
+      try {
+        if (snap.exists()) {
+          const val = snap.val();
+          if (val) {
+            const arr = Object.values(val)
+              .filter((r) => r && typeof r === 'object')
+              .sort((a, b) => {
+                const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+                const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+                return (isNaN(dateB) ? 0 : dateB) - (isNaN(dateA) ? 0 : dateA);
+              });
+            setRecords(arr);
+          } else {
+            setRecords([]);
+          }
+        } else {
+          setRecords([]);
+        }
+      } catch (err) {
+        console.error('[useDashboard] Error processing snapshot:', err);
+      } finally {
+        setLoading(false);
       }
+    }, (err) => {
+      console.error('[useDashboard] Database listener error:', err);
       setLoading(false);
-    }, () => setLoading(false));
+    });
 
     return () => unsub();
   }, []);
@@ -46,24 +64,37 @@ export function useDashboard() {
       color: ALAT_COLORS[i] ?? 'bg-primary',
     }));
 
-  /* ── Data chart mingguan dari rekaman nyata ── */
-  const DAYS_ID = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-  const weeklyMap = { Sen: 0, Sel: 0, Rab: 0, Kam: 0, Jum: 0, Sab: 0, Min: 0 };
+  /* ── Data chart tahunan dari rekaman nyata ── */
+  const MONTHS_ID = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+  const yearlyMap = {
+    Jan: 0,
+    Feb: 0,
+    Mar: 0,
+    Apr: 0,
+    Mei: 0,
+    Jun: 0,
+    Jul: 0,
+    Agu: 0,
+    Sep: 0,
+    Okt: 0,
+    Nov: 0,
+    Des: 0
+  };
   const now = new Date();
-  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const currentYear = now.getFullYear();
 
   records.forEach((r) => {
     const d = new Date(r.created_at);
-    if (d >= sevenDaysAgo) {
-      const dayName = DAYS_ID[d.getDay()];
-      weeklyMap[dayName] = (weeklyMap[dayName] ?? 0) + (r.hasil_timbangan ?? 0);
+    if (d.getFullYear() === currentYear) {
+      const monthName = MONTHS_ID[d.getMonth()];
+      yearlyMap[monthName] = (yearlyMap[monthName] ?? 0) + (r.hasil_timbangan ?? 0);
     }
   });
 
-  const maxWeekly = Math.max(...Object.values(weeklyMap), 1);
-  const chartBars = Object.entries(weeklyMap).map(([day, total]) => ({
+  const maxYearly = Math.max(...Object.values(yearlyMap), 1);
+  const chartBars = Object.entries(yearlyMap).map(([day, total]) => ({
     day,
-    heightPct: Math.round((total / maxWeekly) * 100),
+    heightPct: Math.round((total / maxYearly) * 100),
     total,
   }));
 

@@ -19,7 +19,7 @@ export default function Sidebar({ onClose }) {
             <span className="material-symbols-outlined text-on-primary text-xl">scale</span>
           </div>
           <div>
-            <h1 className="font-bold text-base text-text-main leading-tight">AgriWeight</h1>
+            <h1 className="font-bold text-base text-text-main leading-tight">SmartScale</h1>
             <p className="text-text-secondary text-xs">Management System</p>
           </div>
         </div>

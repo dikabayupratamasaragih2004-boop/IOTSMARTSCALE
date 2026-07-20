@@ -10,7 +10,7 @@
 /* LED weight display — matches stitch input_penimbangan */
 .led-display {
   font-family: 'Inter', monospace;
-  text-shadow: 0 0 20px rgba(0, 105, 72, 0.2);
+  text-shadow: 0 0 20px rgba(74, 108, 247, 0.2);
 }
 
 /* Glassmorphism — login floating overlay (stitch: rgba 0.7 + blur 20px) */
@@ -23,12 +23,12 @@
 
 /* Vibrant gradient — login bg and left panel */
 .vibrant-gradient {
-  background: linear-gradient(135deg, #006948 0%, #00855d 50%, #4edea3 100%);
+  background: linear-gradient(135deg, #4A6CF7 0%, #6E8EF7 50%, #A8BAFF 100%);
 }
 
 /* Chart area gradient — dashboard chart bg */
 .chart-gradient {
-  background: linear-gradient(180deg, rgba(5, 150, 105, 0.1) 0%, rgba(5, 150, 105, 0) 100%);
+  background: linear-gradient(180deg, rgba(74, 108, 247, 0.1) 0%, rgba(74, 108, 247, 0) 100%);
 }
 
 /* Pulsing status dot */

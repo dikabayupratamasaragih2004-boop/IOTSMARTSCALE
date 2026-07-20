@@ -112,7 +112,7 @@ export default function InputTimbangan() {
             {!isIdle && (
               <div className="mt-4 animate-[fadeScale_0.2s_ease-out]">
                 <p className="text-text-secondary text-[10px] uppercase tracking-wider font-bold mb-0.5">Nominal Transaksi</p>
-                <div className="text-2xl sm:text-3xl font-black text-[#006948] tabular-nums">
+                <div className="text-2xl sm:text-3xl font-black text-primary tabular-nums">
                   Rp {displayRp.toLocaleString('id-ID')}
                 </div>
               </div>
@@ -177,7 +177,7 @@ export default function InputTimbangan() {
               onClick={handleMulai}
               disabled={!canStart}
               className="flex-1 py-4 bg-primary text-on-primary font-bold rounded-xl text-sm
-                         shadow-[0_8px_24px_rgba(0,105,72,0.3)] hover:bg-[#047857]
+                         shadow-[0_8px_24px_rgba(74,108,247,0.3)] hover:bg-[#3550D6]
                          active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed
                          flex items-center justify-center gap-2"
             >
@@ -219,7 +219,7 @@ export default function InputTimbangan() {
             <button
               onClick={handleSesiBaru}
               className="flex-1 py-4 bg-primary text-on-primary font-bold rounded-xl text-sm
-                         shadow-[0_8px_24px_rgba(0,105,72,0.3)] hover:bg-[#047857]
+                         shadow-[0_8px_24px_rgba(74,108,247,0.3)] hover:bg-[#3550D6]
                          active:scale-95 transition-all flex items-center justify-center gap-2"
             >
               <span className="material-symbols-outlined">add_circle</span>

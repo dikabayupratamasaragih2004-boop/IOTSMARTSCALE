@@ -17,15 +17,33 @@ export function useManajemenHarga() {
   // Mendengarkan data di node 'prices' secara real-time
   useEffect(() => {
     const unsub = onValue(ref(db, 'prices'), (snap) => {
-      if (snap.exists()) {
-        const arr = Object.values(snap.val())
-          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        setPrices(arr);
-      } else {
-        setPrices([]);
+      try {
+        if (snap.exists()) {
+          const val = snap.val();
+          if (val) {
+            const arr = Object.values(val)
+              .filter((r) => r && typeof r === 'object')
+              .sort((a, b) => {
+                const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+                const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+                return (isNaN(dateB) ? 0 : dateB) - (isNaN(dateA) ? 0 : dateA);
+              });
+            setPrices(arr);
+          } else {
+            setPrices([]);
+          }
+        } else {
+          setPrices([]);
+        }
+      } catch (err) {
+        console.error('[useManajemenHarga] Error processing snapshot:', err);
+      } finally {
+        setLoading(false);
       }
+    }, (err) => {
+      console.error('[useManajemenHarga] Database listener error:', err);
       setLoading(false);
-    }, () => setLoading(false));
+    });
 
     return () => unsub();
   }, []);

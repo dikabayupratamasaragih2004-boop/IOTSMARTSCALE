@@ -30,11 +30,11 @@ export default function AppLayout() {
   const dialog = useDialog();
 
   const [notifications, setNotifications] = useState(() => {
-    const saved = localStorage.getItem('agriweight_notifications');
+    const saved = localStorage.getItem('smartscale_notifications');
     return saved ? JSON.parse(saved) : [];
   });
   const [unreadCount, setUnreadCount] = useState(() => {
-    const saved = localStorage.getItem('agriweight_notifications');
+    const saved = localStorage.getItem('smartscale_notifications');
     if (saved) {
       const list = JSON.parse(saved);
       return list.filter((n) => !n.read).length;
@@ -51,7 +51,7 @@ export default function AppLayout() {
   }, [toast]);
 
   useEffect(() => {
-    localStorage.setItem('agriweight_notifications', JSON.stringify(notifications));
+    localStorage.setItem('smartscale_notifications', JSON.stringify(notifications));
     setUnreadCount(notifications.filter((n) => !n.read).length);
   }, [notifications]);
 
@@ -61,15 +61,18 @@ export default function AppLayout() {
     const unsub = onChildAdded(recordsRef, (snap) => {
       if (!snap.exists()) return;
       const record = snap.val();
+      if (!record || typeof record !== 'object') return;
       
-      const recordTime = new Date(record.created_at).getTime();
+      const recordTime = record.created_at ? new Date(record.created_at).getTime() : 0;
       // Hanya notifikasi record baru yang dibuat setelah web dibuka
-      if (recordTime > appLoadTime.current) {
+      if (recordTime && recordTime > appLoadTime.current) {
         const newNotif = {
           id: record.id,
           title: 'Penimbangan Baru!',
-          message: `${record.nama_petani} menimbang karet di ${record.nama_alat} seberat ${record.hasil_timbangan?.toFixed(2)} Kg.`,
-          time: new Date(record.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+          message: `${record.nama_petani || ''} menimbang karet di ${record.nama_alat || ''} seberat ${record.hasil_timbangan?.toFixed(2) || 0} Kg.`,
+          time: record.created_at && !isNaN(new Date(record.created_at).getTime())
+            ? new Date(record.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+            : '—',
           read: false,
         };
         
@@ -103,7 +106,7 @@ export default function AppLayout() {
     if (confirmed) await logout();
   }
 
-  const pageInfo    = pageTitles[location.pathname] ?? { section: 'AgriWeight', title: 'AgriWeight' };
+  const pageInfo    = pageTitles[location.pathname] ?? { section: 'SmartScale', title: 'SmartScale' };
   const isInputPage = location.pathname === '/input-timbangan';
 
   return (
@@ -154,7 +157,7 @@ export default function AppLayout() {
                 <div className="h-7 w-7 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
                   <span className="material-symbols-outlined text-on-primary text-base">scale</span>
                 </div>
-                <span className="font-bold text-primary text-base truncate">AgriWeight</span>
+                <span className="font-bold text-primary text-base truncate">SmartScale</span>
               </div>
             </div>
 

@@ -55,7 +55,7 @@ export default function Dashboard() {
         />
         <StatCard
           icon="payments"
-          iconBg="bg-green-50 text-[#006948]"
+          iconBg="bg-primary/10 text-primary"
           label="Total Pendapatan"
           value={`Rp ${totalPendapatan.toLocaleString('id-ID')}`}
         />
@@ -70,13 +70,13 @@ export default function Dashboard() {
             <div>
               <h4 className="text-text-main font-bold">Tren Penimbangan Karet</h4>
               <p className="text-text-secondary text-xs mt-0.5">
-                Berat total per hari (7 hari terakhir, Kg)
+                Berat total per bulan (Tahun ini, Kg)
               </p>
             </div>
             <span className="flex items-center gap-1 px-3 py-1.5 bg-surface-container-low rounded-lg
                              text-xs font-bold text-primary whitespace-nowrap">
               <span className="material-symbols-outlined text-base">calendar_today</span>
-              <span className="hidden sm:inline">7 Hari</span>
+              <span className="hidden sm:inline">1 Tahun</span>
             </span>
           </div>
 
@@ -176,7 +176,7 @@ export default function Dashboard() {
                     <p className="font-bold text-primary text-sm tabular-nums">
                       {r.hasil_timbangan?.toFixed(1)} Kg
                     </p>
-                    <p className="text-[#006948] text-xs font-bold tabular-nums">
+                    <p className="text-primary text-xs font-bold tabular-nums">
                       Rp {(r.total_harga ?? 0).toLocaleString('id-ID')}
                     </p>
                   </div>
@@ -218,11 +218,13 @@ export default function Dashboard() {
                       <td className="px-5 py-3.5 font-bold text-text-main tabular-nums text-sm">
                         {r.hasil_timbangan?.toFixed(2)} Kg
                       </td>
-                      <td className="px-5 py-3.5 font-bold text-[#006948] tabular-nums text-sm">
+                      <td className="px-5 py-3.5 font-bold text-primary tabular-nums text-sm">
                         Rp {(r.total_harga ?? 0).toLocaleString('id-ID')}
                       </td>
                       <td className="px-5 py-3.5 text-text-secondary text-sm whitespace-nowrap">
-                        {new Date(r.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })}
+                        {r.created_at && !isNaN(new Date(r.created_at).getTime())
+                          ? new Date(r.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })
+                          : '—'}
                       </td>
                     </tr>
                   ))}

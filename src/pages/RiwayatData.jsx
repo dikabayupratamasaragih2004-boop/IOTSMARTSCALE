@@ -216,7 +216,7 @@ export default function RiwayatData() {
         </div>
         <div className="bg-surface-container-lowest rounded-2xl shadow-card p-4 text-center">
           <p className="text-text-secondary text-xs font-medium mb-1">Total Pendapatan</p>
-          <p className="text-[#006948] text-xl sm:text-2xl font-bold tabular-nums truncate" title={`Rp ${totalPendapatan.toLocaleString('id-ID')}`}>
+          <p className="text-primary text-xl sm:text-2xl font-bold tabular-nums truncate" title={`Rp ${totalPendapatan.toLocaleString('id-ID')}`}>
             Rp {totalPendapatan.toLocaleString('id-ID')}
           </p>
         </div>
@@ -286,13 +286,15 @@ export default function RiwayatData() {
                       <p className="font-bold text-primary tabular-nums text-sm">
                         {r.hasil_timbangan?.toFixed(2)} Kg
                       </p>
-                      <p className="font-bold text-[#006948] tabular-nums text-xs mt-0.5">
+                      <p className="font-bold text-primary tabular-nums text-xs mt-0.5">
                         Rp {(r.total_harga ?? 0).toLocaleString('id-ID')}
                       </p>
                       <p className="text-text-secondary text-[10px] mt-0.5">
-                        {new Date(r.created_at).toLocaleDateString('id-ID', {
-                          day: '2-digit', month: 'short', year: '2-digit',
-                        })}
+                        {r.created_at && !isNaN(new Date(r.created_at).getTime())
+                          ? new Date(r.created_at).toLocaleDateString('id-ID', {
+                              day: '2-digit', month: 'short', year: '2-digit',
+                            })
+                          : '—'}
                       </p>
                     </div>
                   </div>
@@ -371,13 +373,15 @@ export default function RiwayatData() {
                       <td className="px-5 py-3.5 font-bold text-text-main tabular-nums text-sm">
                         {r.hasil_timbangan?.toFixed(2)} Kg
                       </td>
-                      <td className="px-5 py-3.5 font-bold text-[#006948] tabular-nums text-sm">
+                      <td className="px-5 py-3.5 font-bold text-primary tabular-nums text-sm">
                         {r.total_harga ? `Rp ${r.total_harga.toLocaleString('id-ID')}` : '—'}
                       </td>
                       <td className="px-5 py-3.5 text-text-secondary text-sm whitespace-nowrap">
-                        {new Date(r.created_at).toLocaleString('id-ID', {
-                          dateStyle: 'short', timeStyle: 'short',
-                        })}
+                        {r.created_at && !isNaN(new Date(r.created_at).getTime())
+                          ? new Date(r.created_at).toLocaleString('id-ID', {
+                              dateStyle: 'short', timeStyle: 'short',
+                            })
+                          : '—'}
                       </td>
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-1.5">
