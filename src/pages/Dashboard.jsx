@@ -51,7 +51,7 @@ export default function Dashboard() {
           icon="weight"
           iconBg="bg-primary/10 text-primary"
           label="Total Berat (Kg)"
-          value={totalBerat.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          value={totalBerat.toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
         />
         <StatCard
           icon="payments"
@@ -216,7 +216,7 @@ export default function Dashboard() {
                         ) : '—'}
                       </td>
                       <td className="px-5 py-3.5 font-bold text-text-main tabular-nums text-sm">
-                        {r.hasil_timbangan?.toFixed(2)} Kg
+                        {r.hasil_timbangan?.toFixed(1)} Kg
                       </td>
                       <td className="px-5 py-3.5 font-bold text-primary tabular-nums text-sm">
                         Rp {(r.total_harga ?? 0).toLocaleString('id-ID')}

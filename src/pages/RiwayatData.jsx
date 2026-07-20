@@ -118,7 +118,7 @@ function EditModal({ record, onClose, onSave, loading }) {
               </label>
               <input
                 type="number"
-                step="0.01"
+                step="0.1"
                 min="0"
                 value={form.hasil_timbangan}
                 onChange={(e) => set('hasil_timbangan', e.target.value)}
@@ -222,8 +222,8 @@ export default function RiwayatData() {
         </div>
         <div className="bg-surface-container-lowest rounded-2xl shadow-card p-4 text-center">
           <p className="text-text-secondary text-xs font-medium mb-1">Total Berat (Kg)</p>
-          <p className="text-primary text-xl sm:text-2xl font-bold tabular-nums truncate" title={totalBerat.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}>
-            {totalBerat.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          <p className="text-primary text-xl sm:text-2xl font-bold tabular-nums truncate" title={totalBerat.toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}>
+            {totalBerat.toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
           </p>
         </div>
         <div className="bg-surface-container-lowest rounded-2xl shadow-card p-4 text-center">
@@ -310,7 +310,7 @@ export default function RiwayatData() {
                     </div>
                     <div className="text-right flex-shrink-0">
                       <p className="font-bold text-primary tabular-nums text-sm">
-                        {r.hasil_timbangan?.toFixed(2)} Kg
+                        {r.hasil_timbangan?.toFixed(1)} Kg
                       </p>
                       <p className="font-bold text-primary tabular-nums text-xs mt-0.5">
                         Rp {(r.total_harga ?? 0).toLocaleString('id-ID')}
@@ -397,7 +397,7 @@ export default function RiwayatData() {
                         {r.harga_per_kg ? `Rp ${r.harga_per_kg.toLocaleString('id-ID')}` : '—'}
                       </td>
                       <td className="px-5 py-3.5 font-bold text-text-main tabular-nums text-sm">
-                        {r.hasil_timbangan?.toFixed(2)} Kg
+                        {r.hasil_timbangan?.toFixed(1)} Kg
                       </td>
                       <td className="px-5 py-3.5 font-bold text-primary tabular-nums text-sm">
                         {r.total_harga ? `Rp ${r.total_harga.toLocaleString('id-ID')}` : '—'}

@@ -69,7 +69,7 @@ export default function AppLayout() {
         const newNotif = {
           id: record.id,
           title: 'Penimbangan Baru!',
-          message: `${record.nama_petani || ''} menimbang karet di ${record.nama_alat || ''} seberat ${record.hasil_timbangan?.toFixed(2) || 0} Kg.`,
+          message: `${record.nama_petani || ''} menimbang karet di ${record.nama_alat || ''} seberat ${record.hasil_timbangan?.toFixed(1) || 0} Kg.`,
           time: record.created_at && !isNaN(new Date(record.created_at).getTime())
             ? new Date(record.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
             : '—',
@@ -82,7 +82,7 @@ export default function AppLayout() {
 
           // Tampilkan toast di layar hanya sekali
           toastRef.current.success(
-            `${record.nama_petani} menimbang karet di ${record.nama_alat} seberat ${record.hasil_timbangan?.toFixed(2)} Kg.`,
+            `${record.nama_petani} menimbang karet di ${record.nama_alat} seberat ${record.hasil_timbangan?.toFixed(1)} Kg.`,
             'Penimbangan Baru!'
           );
 

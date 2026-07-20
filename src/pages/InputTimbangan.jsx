@@ -99,7 +99,7 @@ export default function InputTimbangan() {
             <div className={`tabular-nums font-black led-display leading-none transition-colors duration-300 ${
               isIdle ? 'text-text-secondary/20' : 'text-primary'
             } text-[60px] sm:text-[84px] lg:text-[108px] xl:text-[128px]`}>
-              {(displayKg ?? 0).toFixed(2)}
+              {(displayKg ?? 0).toFixed(1)}
             </div>
 
             <p className={`text-xl sm:text-2xl font-bold mt-1 ${
@@ -148,7 +148,7 @@ export default function InputTimbangan() {
                   <p><span className="font-semibold text-green-800/80">Alat   :</span> {namaAlat}</p>
                   <p><span className="font-semibold text-green-800/80">Jenis  :</span> {selectedCommodity}</p>
                   <p><span className="font-semibold text-green-800/80">Tarif  :</span> Rp {hargaPerKg.toLocaleString('id-ID')}/Kg</p>
-                  <p><span className="font-semibold text-green-800/80">Berat  :</span> {hasilFinal?.toFixed(2)} Kg</p>
+                  <p><span className="font-semibold text-green-800/80">Berat  :</span> {hasilFinal?.toFixed(1)} Kg</p>
                   <hr className="border-green-200 my-1.5" />
                   <p className="text-base font-bold text-green-900">
                     <span>Total  :</span> Rp {((hasilFinal ?? 0) * hargaPerKg).toLocaleString('id-ID')}
