@@ -70,6 +70,20 @@ export function useRiwayatData() {
     }
   }, [dialog]);
 
+  /* ── Delete All ── */
+  const deleteAllRecords = useCallback(async () => {
+    setActionLoading(true);
+    try {
+      await remove(ref(db, 'weight_records'));
+      await dialog.success('Semua data timbangan berhasil dihapus.', 'Berhasil Hapus Semua');
+    } catch (err) {
+      console.error('[useRiwayatData] Gagal hapus semua:', err);
+      await dialog.error('Gagal menghapus semua data. Silakan coba lagi.', 'Gagal Hapus Semua');
+    } finally {
+      setActionLoading(false);
+    }
+  }, [dialog]);
+
   /* ── Update ── */
   const updateRecord = useCallback(async (id, data) => {
     setActionLoading(true);
@@ -145,6 +159,7 @@ export function useRiwayatData() {
     startRow, endRow,
     ROWS_PER_PAGE,
     deleteRecord,
+    deleteAllRecords,
     updateRecord,
     actionLoading,
     editingRecord, setEditingRecord,

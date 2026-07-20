@@ -181,6 +181,7 @@ export default function RiwayatData() {
     startRow, endRow,
     ROWS_PER_PAGE,
     deleteRecord,
+    deleteAllRecords,
     updateRecord,
     actionLoading,
     editingRecord, setEditingRecord,
@@ -195,6 +196,17 @@ export default function RiwayatData() {
       confirmStyle: 'danger',
     });
     if (confirmed) deleteRecord(r.id);
+  }
+
+  async function handleDeleteAll() {
+    const confirmed = await dialog.confirm({
+      title:        'Hapus Semua Data?',
+      message:      'Semua data riwayat timbangan akan dihapus secara permanen dan tidak dapat dikembalikan. Apakah Anda yakin?',
+      confirmLabel: 'Hapus Semua',
+      cancelLabel:  'Batal',
+      confirmStyle: 'danger',
+    });
+    if (confirmed) deleteAllRecords();
   }
 
   return (
@@ -229,19 +241,33 @@ export default function RiwayatData() {
         <div className="px-5 py-4 flex flex-col sm:flex-row gap-3 items-start sm:items-center
                         justify-between border-b border-surface-container">
           <h4 className="text-text-main font-bold">Riwayat Penimbangan Karet</h4>
-          <div className="relative w-full sm:w-64">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2
-                             text-text-secondary text-lg">
-              search
-            </span>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Cari petani, jenis karet, ID..."
-              className="w-full pl-10 pr-4 py-2.5 bg-surface-container-low rounded-full text-sm
-                         focus:ring-2 focus:ring-primary outline-none transition-all"
-            />
+          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full sm:w-auto">
+            <div className="relative w-full sm:w-64">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2
+                               text-text-secondary text-lg">
+                search
+              </span>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => handleSearch(e.target.value)}
+                placeholder="Cari petani, jenis karet, ID..."
+                className="w-full pl-10 pr-4 py-2.5 bg-surface-container-low rounded-full text-sm
+                           focus:ring-2 focus:ring-primary outline-none transition-all"
+              />
+            </div>
+            {filtered.length > 0 && (
+              <button
+                onClick={handleDeleteAll}
+                disabled={actionLoading}
+                className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full
+                           bg-red-50 hover:bg-red-100 text-status-error text-sm font-bold
+                           disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                <span className="material-symbols-outlined text-lg">delete_sweep</span>
+                <span>Hapus Semua</span>
+              </button>
+            )}
           </div>
         </div>
 
